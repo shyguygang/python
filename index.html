@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TON API Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --input-bg: #f0f0f0;
+            --button-bg: #4CAF50;
+            --button-text: #ffffff;
+            --status-bg: #f9f9f9;
+            --status-border: #cccccc;
+        }
+
+        .dark-mode {
+            --bg-color: #333333;
+            --text-color: #ffffff;
+            --input-bg: #555555;
+            --button-bg: #4CAF50;
+            --button-text: #ffffff;
+            --status-bg: #444444;
+            --status-border: #666666;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #status {
+            border: 1px solid var(--status-border);
+            padding: 10px;
+            margin-top: 20px;
+            height: 300px;
+            overflow-y: auto;
+            background-color: var(--status-bg);
+        }
+
+        input, button {
+            margin: 5px 0;
+            padding: 8px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        input {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--status-border);
+        }
+
+        button {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .button-container {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="mode-toggle" onclick="toggleDarkMode()">☀️</div>
+    <h1>TON API Interface</h1>
+    <div>
+        <label for="address">Address:</label>
+        <input type="text" id="address" placeholder="Enter TON address">
+    </div>
+    <div class="button-container">
+        <button id="getAccountEvents" onclick="getAccountEvents()" disabled>Get Account Events</button>
+        <button id="getNftCollection" onclick="getNftCollection()" disabled>Get NFT Collection</button>
+        <button id="getJettonInfo" onclick="getJettonInfo()" disabled>Get Jetton Info</button>
+    </div>
+    <div class="loading" id="loading">Initializing client... Please wait.</div>
+    <h2>Status:</h2>
+    <div id="status"></div>
+
+    <script>
+        let client;
+
+        function loadScript(url) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = url;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+
+        async function initializeClient() {
+            const loadingElement = document.getElementById('loading');
+            loadingElement.style.display = 'block';
+            
+            try {
+                await loadScript('https://cdn.jsdelivr.net/npm/tonapi-sdk-js@0.2.2/dist/tonapi-sdk.min.js');
+                
+                const YOUR_TOKEN = 'd23d32d61f9e95dec27d48464c830d8210cb8b86445dcaabccfa0eeeb618c99b'; // Replace with your actual API key
+
+                const httpClient = new tonapi.HttpClient({
+                    baseUrl: 'https://tonapi.io',
+                    baseApiParams: {
+                        headers: {
+                            Authorization: `Bearer ${YOUR_TOKEN}`,
+                            'Content-type': 'application/json'
+                        }
+                    }
+                });
+
+                client = new tonapi.Api(httpClient);
+                console.log('Client initialized successfully');
+                log('Client initialized successfully. You can now use the buttons.');
+                enableButtons();
+            } catch (error) {
+                console.error('Failed to initialize client:', error);
+                log(`Error initializing client: ${error.message}`);
+            } finally {
+                loadingElement.style.display = 'none';
+            }
+        }
+
+        function enableButtons() {
+            document.getElementById('getAccountEvents').disabled = false;
+            document.getElementById('getNftCollection').disabled = false;
+            document.getElementById('getJettonInfo').disabled = false;
+        }
+
+        function log(message) {
+            const status = document.getElementById('status');
+            status.innerHTML += `<p>${message}</p>`;
+            status.scrollTop = status.scrollHeight;
+        }
+
+        async function getAccountEvents() {
+            if (!client) {
+                log('Client not initialized. Please wait and try again.');
+                return;
+            }
+            const address = document.getElementById('address').value;
+            try {
+                log(`Fetching account events for ${address}...`);
+                const events = await client.accounts.getAccountEvents(address, { limit: 5 });
+                log(`Received ${events.events.length} events:`);
+                events.events.forEach(event => {
+                    log(`- Event: ${event.event_type} at ${new Date(event.timestamp * 1000).toLocaleString()}`);
+                });
+            } catch (error) {
+                log(`Error: ${error.message}`);
+            }
+        }
+
+        async function getNftCollection() {
+            if (!client) {
+                log('Client not initialized. Please wait and try again.');
+                return;
+            }
+            const address = document.getElementById('address').value;
+            try {
+                log(`Fetching NFT collection for ${address}...`);
+                const collection = await client.nft.getNftCollection(address);
+                log(`Collection name: ${collection.metadata.name}`);
+                log(`Total items: ${collection.next_item_index}`);
+            } catch (error) {
+                log(`Error: ${error.message}`);
+            }
+        }
+
+        async function getJettonInfo() {
+            if (!client) {
+                log('Client not initialized. Please wait and try again.');
+                return;
+            }
+            const address = document.getElementById('address').value;
+            try {
+                log(`Fetching Jetton info for ${address}...`);
+                const jetton = await client.jettons.getJettonInfo(address);
+                log(`Jetton name: ${jetton.metadata.name}`);
+                log(`Total supply: ${jetton.total_supply}`);
+            } catch (error) {
+                log(`Error: ${error.message}`);
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const modeToggle = document.querySelector('.mode-toggle');
+            modeToggle.textContent = document.body.classList.contains('dark-mode') ? '🌙' : '☀️';
+        }
+
+        // Initialize the client when the page loads
+        window.onload = initializeClient;
+    </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# requirements.txt
+
+pytonapi==0.2.2
+python-dotenv==0.19.2
