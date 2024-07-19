@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirror.xyz Scraper</title>
+    <style>
+        #mirrorFrame {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+        #output {
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mirror.xyz Scraper</h1>
+    <input type="text" id="urlInput" placeholder="Enter Mirror.xyz URL">
+    <button onclick="loadPage()">Load Page</button>
+    <button onclick="scrapeContent()">Scrape Content</button>
+    <iframe id="mirrorFrame"></iframe>
+    <div id="output"></div>
+
+    <script>
+        function loadPage() {
+            const url = document.getElementById('urlInput').value;
+            document.getElementById('mirrorFrame').src = url;
+        }
+
+        function scrapeContent() {
+            const frame = document.getElementById('mirrorFrame');
+            const frameDoc = frame.contentDocument || frame.contentWindow.document;
+
+            const entries = frameDoc.querySelectorAll('.entry-wrapper'); // Adjust selector as needed
+            const scrapedData = Array.from(entries).map(entry => {
+                return {
+                    title: entry.querySelector('.entry-title').textContent.trim(),
+                    author: entry.querySelector('.author-name').textContent.trim(),
+                    summary: entry.querySelector('.entry-summary').textContent.trim(),
+                    link: entry.querySelector('a').href
+                };
+            });
+
+            document.getElementById('output').textContent = JSON.stringify(scrapedData, null, 2);
+        }
+    </script>
+</body>
+</html>

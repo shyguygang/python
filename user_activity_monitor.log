@@ -1,0 +1,25 @@
+2024-07-15 12:40:09,432 - INFO - Added column interacted_with to activities table
+2024-07-15 12:40:09,453 - INFO - Added column session_duration to activities table
+2024-07-15 12:40:09,471 - INFO - Added column rolled_up_wallet to activities table
+2024-07-15 12:40:09,472 - INFO - Created index: CREATE INDEX IF NOT EXISTS idx_timestamp ON activities(timestamp)
+2024-07-15 12:40:09,472 - INFO - Created index: CREATE INDEX IF NOT EXISTS idx_tx_type ON activities(tx_type)
+2024-07-15 12:40:09,513 - INFO - Created index: CREATE INDEX IF NOT EXISTS idx_interacted_with ON activities(interacted_with)
+2024-07-15 12:40:09,528 - INFO - Created index: CREATE INDEX IF NOT EXISTS idx_rolled_up_wallet ON activities(rolled_up_wallet)
+2024-07-15 12:40:09,529 - INFO - Database initialization complete
+2024-07-15 12:40:09,700 - ERROR - Error fetching user activity: 404 Client Error: Not Found for url: https://node.deso.org/api/v0/get-transactions-for-user?PublicKeyBase58Check=YBC1YLiwZ1bd8xdUmXPoLMJtBVEN9hGUvayATeDfRq4Upwed6N2YMi68&Limit=100&LastTransactionHeight=0
+2024-07-15 12:41:09,701 - INFO - 
+Activity Statistics:
+2024-07-15 12:41:09,702 - INFO - 
+Most Frequent Interactions:
+2024-07-15 12:41:09,702 - INFO - 
+Average Session Duration by Activity Type:
+2024-07-15 12:41:09,929 - ERROR - Error fetching user activity: 404 Client Error: Not Found for url: https://node.deso.org/api/v0/get-transactions-for-user?PublicKeyBase58Check=YBC1YLiwZ1bd8xdUmXPoLMJtBVEN9hGUvayATeDfRq4Upwed6N2YMi68&Limit=100&LastTransactionHeight=0
+2024-07-15 12:42:09,930 - INFO - 
+Activity Statistics:
+2024-07-15 12:42:09,930 - INFO - 
+Most Frequent Interactions:
+2024-07-15 12:42:09,931 - INFO - 
+Average Session Duration by Activity Type:
+2024-07-15 12:42:10,110 - ERROR - Error fetching user activity: 404 Client Error: Not Found for url: https://node.deso.org/api/v0/get-transactions-for-user?PublicKeyBase58Check=YBC1YLiwZ1bd8xdUmXPoLMJtBVEN9hGUvayATeDfRq4Upwed6N2YMi68&Limit=100&LastTransactionHeight=0
+2024-07-15 12:42:46,383 - INFO - 
+Monitoring stopped.
